@@ -1,0 +1,412 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .page { padding: 1.5rem 0; }
+  .section { margin-bottom: 1.5rem; }
+  .section-title {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--color-text-tertiary);
+    margin-bottom: 10px; padding-left: 2px;
+  }
+  .box {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+  }
+  .box-header {
+    padding: 14px 16px 12px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .box-header-icon {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .box-header-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .box-header-sub { font-size: 12px; color: var(--color-text-tertiary); margin-top: 1px; }
+
+  /* Tech stack grid */
+  .tech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0; }
+  .tech-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .tech-row:last-child { border-bottom: none; }
+  .tech-dot {
+    width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0;
+  }
+  .tech-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .tech-ver { font-size: 11px; color: var(--color-text-tertiary); margin-top: 1px; }
+  .tech-role { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; line-height: 1.4; }
+
+  /* Schema models */
+  .model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .model-card {
+    padding: 12px 14px;
+    border-right: 0.5px solid var(--color-border-tertiary);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .model-card:nth-child(3n) { border-right: none; }
+  .model-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+  .model-field {
+    font-size: 11px; color: var(--color-text-secondary);
+    padding: 2px 0; display: flex; gap: 6px; align-items: baseline;
+  }
+  .field-name { color: var(--color-text-primary); font-weight: 500; }
+  .field-type {
+    font-size: 10px; padding: 1px 5px; border-radius: 3px;
+    background: var(--color-background-secondary);
+    color: var(--color-text-tertiary); font-family: var(--font-mono);
+  }
+  .field-pk { background: var(--color-background-info); color: var(--color-text-info); }
+
+  /* Routes */
+  .route-list {}
+  .route-row {
+    display: grid; grid-template-columns: 180px 70px 1fr;
+    gap: 12px; padding: 9px 16px; align-items: center;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    font-size: 13px;
+  }
+  .route-row:last-child { border-bottom: none; }
+  .route-path { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-primary); }
+  .badge {
+    font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 4px;
+    display: inline-block; text-align: center;
+  }
+  .badge-dynamic { background: var(--color-background-success); color: var(--color-text-success); }
+  .badge-static  { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .badge-api     { background: var(--color-background-info); color: var(--color-text-info); }
+  .route-desc { color: var(--color-text-secondary); font-size: 12px; }
+
+  /* Emission factors */
+  .factor-row {
+    display: grid; grid-template-columns: 1fr 140px 130px;
+    padding: 9px 16px; gap: 12px; border-bottom: 0.5px solid var(--color-border-tertiary);
+    font-size: 13px; align-items: center;
+  }
+  .factor-row:last-child { border-bottom: none; }
+  .factor-source { color: var(--color-text-primary); }
+  .factor-val { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-secondary); }
+  .factor-std { font-size: 11px; color: var(--color-text-tertiary); }
+
+  /* Auth flow */
+  .auth-steps { padding: 14px 16px; display: flex; flex-direction: column; gap: 0; }
+  .auth-step { display: flex; gap: 12px; padding: 6px 0; }
+  .auth-arrow {
+    font-size: 11px; font-family: var(--font-mono);
+    background: var(--color-background-secondary);
+    padding: 2px 7px; border-radius: 4px; color: var(--color-text-secondary); white-space: nowrap;
+    align-self: flex-start; margin-top: 1px;
+  }
+  .auth-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.5; }
+  .code-chip {
+    display: inline; font-family: var(--font-mono); font-size: 11px;
+    background: var(--color-background-secondary); padding: 1px 5px; border-radius: 3px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Header stats */
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .stat-cell {
+    padding: 14px 16px; text-align: center;
+    border-right: 0.5px solid var(--color-border-tertiary);
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-num { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .stat-lbl { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+
+  .col-header {
+    display: grid; grid-template-columns: 180px 70px 1fr;
+    gap: 12px; padding: 8px 16px;
+    background: var(--color-background-secondary);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    font-size: 11px; font-weight: 500; color: var(--color-text-tertiary);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .factor-header {
+    display: grid; grid-template-columns: 1fr 140px 130px;
+    padding: 8px 16px; gap: 12px;
+    background: var(--color-background-secondary);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    font-size: 11px; font-weight: 500; color: var(--color-text-tertiary);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+</style>
+
+<div class="page">
+
+  <!-- Hero stats -->
+  <div class="section">
+    <div class="box">
+      <div class="box-header">
+        <div class="box-header-icon" style="background:var(--color-background-success)">🌿</div>
+        <div>
+          <div class="box-header-title">Mepco Eco-Hub</div>
+          <div class="box-header-sub">Mepco Schlenk Engineering College — Sustainability Intelligence Platform</div>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-num">19</div><div class="stat-lbl">Routes</div></div>
+        <div class="stat-cell"><div class="stat-num">11</div><div class="stat-lbl">DB Models</div></div>
+        <div class="stat-cell"><div class="stat-num">3</div><div class="stat-lbl">Sessions</div></div>
+        <div class="stat-cell"><div class="stat-num" style="color:var(--color-text-success)">✓</div><div class="stat-lbl">Production</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <div class="box">
+
+      <div class="box-header">
+        <div class="box-header-title">Core framework</div>
+      </div>
+      <div>
+        <div class="tech-row">
+          <div class="tech-dot" style="background:#3B8BD4"></div>
+          <div><div class="tech-name">Next.js <span style="color:var(--color-text-tertiary);font-weight:400">16.2.2</span></div><div class="tech-role">Full-stack React — App Router, Server Actions, Turbopack</div></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-dot" style="background:#639922"></div>
+          <div><div class="tech-name">React <span style="color:var(--color-text-tertiary);font-weight:400">19.2.4</span></div><div class="tech-role">UI component library</div></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-dot" style="background:#534AB7"></div>
+          <div><div class="tech-name">NextAuth.js <span style="color:var(--color-text-tertiary);font-weight:400">4.24.13</span></div><div class="tech-role">Session management, credentials provider</div></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-dot" style="background:#D85A30"></div>
+          <div><div class="tech-name">bcryptjs <span style="color:var(--color-text-tertiary);font-weight:400">3.0.3</span></div><div class="tech-role">Password hashing</div></div>
+        </div>
+      </div>
+
+      <div class="box-header" style="border-top:0.5px solid var(--color-border-tertiary)">
+        <div class="box-header-title">Database</div>
+      </div>
+      <div>
+        <div class="tech-row">
+          <div class="tech-dot" style="background:#1D9E75"></div>
+          <div><div class="tech-name">Prisma ORM <span style="color:var(--color-text-tertiary);font-weight:400">5.22.0</span></div><div class="tech-role">Type-safe DB client, schema manager</div></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-dot" style="background:#888780"></div>
+          <div><div class="tech-name">SQLite</div><div class="tech-role">Lightweight file-based database · <span class="code-chip">dev.db</span></div></div>
+        </div>
+      </div>
+
+      <div class="box-header" style="border-top:0.5px solid var(--color-border-tertiary)">
+        <div class="box-header-title">Charts, PDF & icons</div>
+      </div>
+      <div>
+        <div class="tech-row">
+          <div class="tech-dot" style="background:#BA7517"></div>
+          <div><div class="tech-name">Recharts <span style="color:var(--color-text-tertiary);font-weight:400">3.8.1</span></div><div class="tech-role">Area, bar, composed charts — analytics + forecast</div></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-dot" style="background:#E24B4A"></div>
+          <div><div class="tech-name">jsPDF <span style="color:var(--color-text-tertiary);font-weight:400">4.2.1</span></div><div class="tech-role">Programmatic A4 PDF — audit reports</div></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-dot" style="background:#3B8BD4"></div>
+          <div><div class="tech-name">lucide-react <span style="color:var(--color-text-tertiary);font-weight:400">1.7.0</span></div><div class="tech-role">Professional SVG icons — replaces all emojis</div></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-dot" style="background:#888780"></div>
+          <div><div class="tech-name">Google Fonts</div><div class="tech-role">Outfit (body) + Space Grotesk (headings)</div></div>
+        </div>
+      </div>
+
+      <div class="box-header" style="border-top:0.5px solid var(--color-border-tertiary)">
+        <div class="box-header-title">External APIs</div>
+      </div>
+      <div>
+        <div class="tech-row" style="border-bottom:none">
+          <div class="tech-dot" style="background:#378ADD"></div>
+          <div><div class="tech-name">OpenWeatherMap API</div><div class="tech-role">Live weather for Sivakasi — temp, humidity, wind, visibility</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DB Schema -->
+  <div class="section">
+    <div class="section-title">Database schema — 11 models</div>
+    <div class="box">
+      <div class="model-grid">
+
+        <div class="model-card" style="border-right:0.5px solid var(--color-border-tertiary)">
+          <div class="model-name">User</div>
+          <div class="model-field"><span class="field-name">id</span><span class="field-type field-pk">PK</span></div>
+          <div class="model-field"><span class="field-name">name</span><span class="field-type">String?</span></div>
+          <div class="model-field"><span class="field-name">email</span><span class="field-type">String</span></div>
+          <div class="model-field"><span class="field-name">role</span><span class="field-type">STUDENT</span></div>
+          <div class="model-field"><span class="field-name">department</span><span class="field-type">String?</span></div>
+        </div>
+
+        <div class="model-card" style="border-right:0.5px solid var(--color-border-tertiary)">
+          <div class="model-name">EmissionRecord</div>
+          <div class="model-field"><span class="field-name">type</span><span class="field-type">String</span></div>
+          <div class="model-field"><span class="field-name">amount</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">calculatedCo2</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">month / year</span><span class="field-type">Int</span></div>
+          <div class="model-field"><span class="field-name">building</span><span class="field-type">String?</span></div>
+        </div>
+
+        <div class="model-card">
+          <div class="model-name">SustainabilityIdea</div>
+          <div class="model-field"><span class="field-name">title</span><span class="field-type">String</span></div>
+          <div class="model-field"><span class="field-name">description</span><span class="field-type">String</span></div>
+          <div class="model-field"><span class="field-name">upvotes</span><span class="field-type">Int</span></div>
+          <div class="model-field"><span class="field-name">authorId</span><span class="field-type">FK</span></div>
+        </div>
+
+        <div class="model-card" style="border-right:0.5px solid var(--color-border-tertiary)">
+          <div class="model-name">WaterRecord</div>
+          <div class="model-field"><span class="field-name">consumed</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">wastewater</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">rainwaterHarvested</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">month / year</span><span class="field-type">Int</span></div>
+        </div>
+
+        <div class="model-card" style="border-right:0.5px solid var(--color-border-tertiary)">
+          <div class="model-name">WasteRecord</div>
+          <div class="model-field"><span class="field-name">ewaste</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">organic</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">recyclable</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">paper</span><span class="field-type">Float</span></div>
+        </div>
+
+        <div class="model-card">
+          <div class="model-name">TransportRecord</div>
+          <div class="model-field"><span class="field-name">vehicleType</span><span class="field-type">String</span></div>
+          <div class="model-field"><span class="field-name">fuelType</span><span class="field-type">String</span></div>
+          <div class="model-field"><span class="field-name">fuelLiters</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">calculatedCo2</span><span class="field-type">Float</span></div>
+        </div>
+
+        <div class="model-card" style="border-right:0.5px solid var(--color-border-tertiary);border-bottom:none">
+          <div class="model-name">PaperRecord</div>
+          <div class="model-field"><span class="field-name">department</span><span class="field-type">String</span></div>
+          <div class="model-field"><span class="field-name">reams</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">calculatedCo2</span><span class="field-type">Float</span></div>
+        </div>
+
+        <div class="model-card" style="border-right:0.5px solid var(--color-border-tertiary);border-bottom:none">
+          <div class="model-name">UserBadge + DeptScore</div>
+          <div class="model-field"><span class="field-name">badgeId</span><span class="field-type">String</span></div>
+          <div class="model-field"><span class="field-name">score</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">co2Reduction</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">rank</span><span class="field-type">Int</span></div>
+        </div>
+
+        <div class="model-card" style="border-bottom:none">
+          <div class="model-name">EcoEvent + RSVP + Pledge</div>
+          <div class="model-field"><span class="field-name">eventDate</span><span class="field-type">DateTime</span></div>
+          <div class="model-field"><span class="field-name">category</span><span class="field-type">String</span></div>
+          <div class="model-field"><span class="field-name">footprintKg</span><span class="field-type">Float</span></div>
+          <div class="model-field"><span class="field-name">pledgePercent</span><span class="field-type">Float</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Routes -->
+  <div class="section">
+    <div class="section-title">All 19 routes</div>
+    <div class="box">
+      <div class="col-header">
+        <div>Path</div><div>Type</div><div>Description</div>
+      </div>
+      <div class="route-list">
+        <div class="route-row"><div class="route-path">/</div><div><span class="badge badge-static">Static</span></div><div class="route-desc">Landing page</div></div>
+        <div class="route-row"><div class="route-path">/login</div><div><span class="badge badge-static">Static</span></div><div class="route-desc">Register + login</div></div>
+        <div class="route-row"><div class="route-path">/dashboard</div><div><span class="badge badge-dynamic">Dynamic</span></div><div class="route-desc">Home — stats, weather, 10 quick actions</div></div>
+        <div class="route-row"><div class="route-path">/carbonemission</div><div><span class="badge badge-static">Static</span></div><div class="route-desc">Emission logging form</div></div>
+        <div class="route-row"><div class="route-path">/analytics</div><div><span class="badge badge-dynamic">Dynamic</span></div><div class="route-desc">Charts + breakdowns</div></div>
+        <div class="route-row"><div class="route-path">/report</div><div><span class="badge badge-dynamic">Dynamic</span></div><div class="route-desc">AI report + PDF download</div></div>
+        <div class="route-row"><div class="route-path">/complaints</div><div><span class="badge badge-dynamic">Dynamic</span></div><div class="route-desc">Sustainability idea board</div></div>
+        <div class="route-row"><div class="route-path">/tracking</div><div><span class="badge badge-dynamic">Dynamic</span></div><div class="route-desc">Water / waste / transport / paper</div></div>
+        <div class="route-row"><div class="route-path">/leaderboard</div><div><span class="badge badge-dynamic">Dynamic</span></div><div class="route-desc">Department rankings + 12 badges</div></div>
+        <div class="route-row"><div class="route-path">/campusmap</div><div><span class="badge badge-dynamic">Dynamic</span></div><div class="route-desc">Interactive SVG campus map</div></div>
+        <div class="route-row"><div class="route-path">/forecast</div><div><span class="badge badge-dynamic">Dynamic</span></div><div class="route-desc">Predictive analytics + alerts</div></div>
+        <div class="route-row"><div class="route-path">/events</div><div><span class="badge badge-dynamic">Dynamic</span></div><div class="route-desc">Eco events + RSVP</div></div>
+        <div class="route-row"><div class="route-path">/footprint</div><div><span class="badge badge-dynamic">Dynamic</span></div><div class="route-desc">Personal carbon calculator</div></div>
+        <div class="route-row"><div class="route-path">/calculator</div><div><span class="badge badge-static">Static</span></div><div class="route-desc">Standalone calculator</div></div>
+        <div class="route-row"><div class="route-path">/api/auth/[...nextauth]</div><div><span class="badge badge-api">API</span></div><div class="route-desc">NextAuth handler</div></div>
+        <div class="route-row"><div class="route-path">/api/auth/register</div><div><span class="badge badge-api">API</span></div><div class="route-desc">User registration</div></div>
+        <div class="route-row"><div class="route-path">/api/weather</div><div><span class="badge badge-api">API</span></div><div class="route-desc">OpenWeatherMap proxy</div></div>
+        <div class="route-row"><div class="route-path">/api/pledge</div><div><span class="badge badge-api">API</span></div><div class="route-desc">Personal pledge CRUD</div></div>
+        <div class="route-row" style="border-bottom:none"><div class="route-path">/_not-found</div><div><span class="badge badge-static">Static</span></div><div class="route-desc">404 page</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CO2 Emission Factors -->
+  <div class="section">
+    <div class="section-title">CO₂ emission factors</div>
+    <div class="box">
+      <div class="factor-header">
+        <div>Source</div><div>Factor</div><div>Standard</div>
+      </div>
+      <div class="factor-row"><div class="factor-source">Electricity (TANGEDCO grid)</div><div class="factor-val">0.82 kg CO₂e / kWh</div><div class="factor-std">BEE Indian Grid</div></div>
+      <div class="factor-row"><div class="factor-source">Diesel combustion</div><div class="factor-val">2.68 kg CO₂e / L</div><div class="factor-std">IPCC standard</div></div>
+      <div class="factor-row"><div class="factor-source">Canteen organic waste</div><div class="factor-val">2.50 kg CO₂e / kg</div><div class="factor-std">Mixed organic decomp.</div></div>
+      <div class="factor-row"><div class="factor-source">Petrol combustion</div><div class="factor-val">2.31 kg CO₂e / L</div><div class="factor-std">IPCC standard</div></div>
+      <div class="factor-row"><div class="factor-source">Paper (per ream)</div><div class="factor-val">2.00 kg CO₂e / ream</div><div class="factor-std">Life cycle estimate</div></div>
+      <div class="factor-row"><div class="factor-source">Carbon offset (tree)</div><div class="factor-val">21 kg CO₂ / tree / yr</div><div class="factor-std">Standard forest carbon</div></div>
+      <div class="factor-row"><div class="factor-source">Commute (avg mix)</div><div class="factor-val">0.21 kg CO₂e / km</div><div class="factor-std">Transport mix estimate</div></div>
+      <div class="factor-row" style="border-bottom:none"><div class="factor-source">Domestic flight</div><div class="factor-val">255 kg CO₂e / flight</div><div class="factor-std">Average haul</div></div>
+    </div>
+  </div>
+
+  <!-- Auth flow -->
+  <div class="section">
+    <div class="section-title">Authentication flow</div>
+    <div class="box">
+      <div class="auth-steps">
+        <div class="auth-step">
+          <div class="auth-arrow">POST</div>
+          <div class="auth-text"><span class="code-chip">/api/auth/register</span> → <span class="code-chip">bcrypt.hash(password)</span> → <span class="code-chip">prisma.user.create</span></div>
+        </div>
+        <div class="auth-step">
+          <div class="auth-arrow">POST</div>
+          <div class="auth-text"><span class="code-chip">/api/auth/callback/credentials</span> → <span class="code-chip">bcrypt.compare</span> → JWT session <span style="color:var(--color-text-tertiary)">{ id, name, email, role }</span></div>
+        </div>
+        <div class="auth-step">
+          <div class="auth-arrow">Guard</div>
+          <div class="auth-text">All protected pages call <span class="code-chip">getServerSession(authOptions)</span> → redirects to <span class="code-chip">/login</span> if null</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick start -->
+  <div class="section">
+    <div class="section-title">Quick start</div>
+    <div class="box">
+      <div style="padding:14px 16px;font-family:var(--font-mono);font-size:12px;color:var(--color-text-secondary);line-height:2;border-bottom:0.5px solid var(--color-border-tertiary)">
+        <div><span style="color:var(--color-text-tertiary)"># 1 install</span></div>
+        <div style="color:var(--color-text-primary)">npm install</div>
+        <div><span style="color:var(--color-text-tertiary)"># 2 generate + migrate</span></div>
+        <div style="color:var(--color-text-primary)">npx prisma generate && npx prisma migrate dev</div>
+        <div><span style="color:var(--color-text-tertiary)"># 3 run</span></div>
+        <div style="color:var(--color-text-primary)">npm run dev  <span style="color:var(--color-text-tertiary)">→  http://localhost:3000</span></div>
+      </div>
+      <div style="padding:14px 16px;font-family:var(--font-mono);font-size:12px;color:var(--color-text-secondary);line-height:2">
+        <div><span style="color:var(--color-text-tertiary)"># .env required</span></div>
+        <div><span style="color:var(--color-text-primary)">DATABASE_URL</span>=<span style="color:var(--color-text-tertiary)">"file:./dev.db"</span></div>
+        <div><span style="color:var(--color-text-primary)">NEXTAUTH_SECRET</span>=<span style="color:var(--color-text-tertiary)">"your-secret-here"</span></div>
+        <div><span style="color:var(--color-text-primary)">NEXTAUTH_URL</span>=<span style="color:var(--color-text-tertiary)">"http://localhost:3000"</span></div>
+        <div><span style="color:var(--color-text-primary)">OPENWEATHER_API_KEY</span>=<span style="color:var(--color-text-tertiary)">"optional"</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String?
+  role          String    @default("STUDENT") // STUDENT or ADMIN
+  department    String?
+  
+  // Relations
+  ideas         SustainabilityIdea[]
+  emissions     EmissionRecord[]
+  badges        UserBadge[]
+  rsvps         EventRSVP[]
+  pledges       PersonalPledge[]
+}
+
+model SustainabilityIdea {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  upvotes     Int      @default(0)
+  createdAt   DateTime @default(now())
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+}
+
+model EmissionRecord {
+  id             String   @id @default(cuid())
+  type           String   // 'electricity', 'diesel', 'canteen'
+  amount         Float    // e.g., kWh for electricity, Liters for diesel, kg of waste for canteen
+  calculatedCo2  Float    // The calculated standard CO2e in kg
+  month          Int      // 1-12
+  year           Int      // 2024, 2025, etc.
+  building       String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  recordedById   String
+  recordedBy     User     @relation(fields: [recordedById], references: [id])
+}
+
+// ─── Expanded Tracking Models ────────────────────────────────────────────────
+
+model WaterRecord {
+  id                  String   @id @default(cuid())
+  consumed            Float    // liters consumed
+  wastewater          Float    @default(0) // liters wastewater treated
+  rainwaterHarvested  Float    @default(0) // liters rainwater collected
+  month               Int
+  year                Int
+  location            String?
+  notes               String?
+  createdAt           DateTime @default(now())
+  recordedById        String
+}
+
+model WasteRecord {
+  id           String   @id @default(cuid())
+  ewaste       Float    @default(0) // kg
+  organic      Float    @default(0) // kg
+  recyclable   Float    @default(0) // kg
+  paper        Float    @default(0) // kg
+  month        Int
+  year         Int
+  department   String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  recordedById String
+}
+
+model TransportRecord {
+  id            String   @id @default(cuid())
+  vehicleType   String   // 'bus', 'car', 'twowheeler', 'commute_estimate'
+  fuelType      String   @default("diesel") // 'diesel', 'petrol', 'electric'
+  fuelLiters    Float    @default(0)
+  totalKm       Float    @default(0)
+  passengerCount Int     @default(0)
+  calculatedCo2 Float    @default(0)
+  month         Int
+  year          Int
+  notes         String?
+  createdAt     DateTime @default(now())
+  recordedById  String
+}
+
+model PaperRecord {
+  id           String   @id @default(cuid())
+  department   String
+  reams        Float    // reams of paper (500 sheets each)
+  calculatedCo2 Float   // 1 ream ≈ 2 kg CO2e
+  month        Int
+  year         Int
+  notes        String?
+  createdAt    DateTime @default(now())
+  recordedById String
+}
+
+// ─── Gamification ─────────────────────────────────────────────────────────────
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  badgeId   String   // e.g. 'green_pioneer', 'zero_waste_week'
+  awardedAt DateTime @default(now())
+  awardedBy String?  // admin userId
+}
+
+model DepartmentScore {
+  id            String   @id @default(cuid())
+  department    String
+  month         Int
+  year          Int
+  co2Reduction  Float    @default(0) // % vs prior month
+  score         Float    @default(0)
+  rank          Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+// ─── Events & Campaigns ───────────────────────────────────────────────────────
+
+model EcoEvent {
+  id           String      @id @default(cuid())
+  title        String
+  description  String
+  eventDate    DateTime
+  location     String?
+  impactMetric String?     // e.g. "100 trees = 2100 kg CO2/yr"
+  category     String      @default("general") // 'plantation','cleanup','awareness','novehicle'
+  createdById  String
+  createdAt    DateTime    @default(now())
+  rsvps        EventRSVP[]
+}
+
+model EventRSVP {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     EcoEvent @relation(fields: [eventId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, userId])
+}
+
+// ─── Personal Footprint ───────────────────────────────────────────────────────
+
+model PersonalPledge {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  footprintKg     Float    // calculated annual kg CO2e
+  pledgePercent   Float    // % reduction pledged
+  commuteKmDay    Float    @default(0)
+  dietType        String   @default("veg") // 'veg','nonveg','vegan'
+  deviceHrsDay    Float    @default(4)
+  flightsPerYear  Int      @default(0)
+  createdAt       DateTime @default(now())
+}
+
